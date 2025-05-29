@@ -6,8 +6,8 @@ issue_tracker: https://github.com/flutter/flutter/issues?q=is%3Aissue+is%3Aopen+
 version: 2.9.5
 
 environment:
-  sdk: ^3.6.0
-  flutter: ">=3.27.0"
+  sdk: ^3.5.4
+  flutter: ">=3.24.5"
 
 flutter:
   plugin:
@@ -25,10 +25,10 @@ dependencies:
   flutter:
     sdk: flutter
   html: ^0.15.0
-  video_player_android: ^2.3.5
-  video_player_avfoundation: ^2.5.6
-  video_player_platform_interface: ^6.2.0
-  video_player_web: ^2.1.0
+  video_player_android: ^2.7.16
+  video_player_avfoundation: ^2.7.1
+  video_player_platform_interface: ^6.3.0
+  video_player_web: ^2.3.5
 
 dev_dependencies:
   flutter_test:
