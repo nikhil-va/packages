@@ -84,6 +84,28 @@ class FakeController extends ValueNotifier<VideoPlayerValue>
   Future<void> setClosedCaptionFile(
     Future<ClosedCaptionFile>? closedCaptionFile,
   ) async {}
+  
+  @override
+  set dataSource(String _dataSource) {
+    // TODO: implement dataSource
+  }
+  
+  @override
+  set httpHeaders(Map<String, String> _httpHeaders) {
+    // TODO: implement httpHeaders
+  }
+  
+  @override
+  Future<void> update() {
+    // TODO: implement update
+    throw UnimplementedError();
+  }
+  
+  @override
+  Future<void> updateFile(File file, {Future<ClosedCaptionFile>? closedCaptionFile, Map<String, String> httpHeaders = const <String, String>{}}) {
+    // TODO: implement updateFile
+    throw UnimplementedError();
+  }
 }
 
 Future<ClosedCaptionFile> _loadClosedCaption() async =>

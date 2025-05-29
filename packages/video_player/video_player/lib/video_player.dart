@@ -61,15 +61,11 @@ class VideoPlayerValue {
   });
 
   /// Returns an instance for a video that hasn't been loaded.
-  const VideoPlayerValue.uninitialized()
-      : this(duration: Duration.zero, isInitialized: false);
+  const VideoPlayerValue.uninitialized() : this(duration: Duration.zero, isInitialized: false);
 
   /// Returns an instance with the given [errorDescription].
   const VideoPlayerValue.erroneous(String errorDescription)
-      : this(
-            duration: Duration.zero,
-            isInitialized: false,
-            errorDescription: errorDescription);
+      : this(duration: Duration.zero, isInitialized: false, errorDescription: errorDescription);
 
   /// This constant is just to indicate that parameter is not passed to [copyWith]
   /// workaround for this issue https://github.com/dart-lang/language/issues/2009
@@ -186,9 +182,8 @@ class VideoPlayerValue {
       volume: volume ?? this.volume,
       playbackSpeed: playbackSpeed ?? this.playbackSpeed,
       rotationCorrection: rotationCorrection ?? this.rotationCorrection,
-      errorDescription: errorDescription != _defaultErrorDescription
-          ? errorDescription
-          : this.errorDescription,
+      errorDescription:
+          errorDescription != _defaultErrorDescription ? errorDescription : this.errorDescription,
       isCompleted: isCompleted ?? this.isCompleted,
     );
   }
@@ -270,9 +265,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   /// null. The [package] argument must be non-null when the asset comes from a
   /// package and null otherwise.
   VideoPlayerController.asset(this.dataSource,
-      {this.package,
-      Future<ClosedCaptionFile>? closedCaptionFile,
-      this.videoPlayerOptions})
+      {this.package, Future<ClosedCaptionFile>? closedCaptionFile, this.videoPlayerOptions})
       : _closedCaptionFileFuture = closedCaptionFile,
         dataSourceType = DataSourceType.asset,
         formatHint = null,
@@ -354,12 +347,12 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
 
   /// The URI to the video file. This will be in different formats depending on
   /// the [DataSourceType] of the original video.
-  final String dataSource;
+  String dataSource;
 
   /// HTTP headers used for the request to the [dataSource].
   /// Only for [VideoPlayerController.network].
   /// Always empty for other video types.
-  final Map<String, String> httpHeaders;
+  Map<String, String> httpHeaders;
 
   /// **Android only**. Will override the platform's generic file format
   /// detection with whatever is set here.
@@ -395,8 +388,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
 
   /// Attempts to open the given [dataSource] and load metadata about the video.
   Future<void> initialize() async {
-    final bool allowBackgroundPlayback =
-        videoPlayerOptions?.allowBackgroundPlayback ?? false;
+    final bool allowBackgroundPlayback = videoPlayerOptions?.allowBackgroundPlayback ?? false;
     if (!allowBackgroundPlayback) {
       _lifeCycleObserver = _VideoAppLifeCycleObserver(this);
     }
@@ -432,12 +424,11 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     }
 
     if (videoPlayerOptions?.mixWithOthers != null) {
-      await _videoPlayerPlatform
-          .setMixWithOthers(videoPlayerOptions!.mixWithOthers);
+      await _videoPlayerPlatform.setMixWithOthers(videoPlayerOptions!.mixWithOthers);
     }
 
-    _textureId = (await _videoPlayerPlatform.create(dataSourceDescription)) ??
-        kUninitializedTextureId;
+    _textureId =
+        (await _videoPlayerPlatform.create(dataSourceDescription)) ?? kUninitializedTextureId;
     _creatingCompleter!.complete(null);
     final Completer<void> initializingCompleter = Completer<void>();
 
@@ -493,8 +484,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
           value = value.copyWith(isBuffering: false);
         case VideoEventType.isPlayingStateUpdate:
           if (event.isPlaying ?? false) {
-            value =
-                value.copyWith(isPlaying: event.isPlaying, isCompleted: false);
+            value = value.copyWith(isPlaying: event.isPlaying, isCompleted: false);
           } else {
             value = value.copyWith(isPlaying: event.isPlaying);
           }
@@ -540,6 +530,49 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     }
     _isDisposed = true;
     super.dispose();
+  }
+
+  Future<void> updateFile(
+    File file, {
+    Future<ClosedCaptionFile>? closedCaptionFile,
+    Map<String, String> httpHeaders = const <String, String>{},
+  }) async {
+    dataSource = Uri.file(file.absolute.path).toString();
+    this.httpHeaders = httpHeaders;
+    _closedCaptionFileFuture = closedCaptionFile;
+    await update();
+  }
+
+  Future<void> update() async {
+    late DataSource dataSourceDescription;
+    switch (dataSourceType) {
+      case DataSourceType.asset:
+        dataSourceDescription = DataSource(
+          sourceType: DataSourceType.asset,
+          asset: dataSource,
+          package: package,
+        );
+      case DataSourceType.network:
+        dataSourceDescription = DataSource(
+          sourceType: DataSourceType.network,
+          uri: dataSource,
+          formatHint: formatHint,
+          httpHeaders: httpHeaders,
+        );
+      case DataSourceType.file:
+        dataSourceDescription = DataSource(
+          sourceType: DataSourceType.file,
+          uri: dataSource,
+          httpHeaders: httpHeaders,
+        );
+      case DataSourceType.contentUri:
+        dataSourceDescription = DataSource(
+          sourceType: DataSourceType.contentUri,
+          uri: dataSource,
+        );
+    }
+
+    // await _videoPlayerPlatform.update(_textureId, dataSourceDescription);
   }
 
   /// Starts playing the video.
@@ -995,8 +1028,7 @@ class _VideoScrubberState extends State<VideoScrubber> {
         seekToRelativePosition(details.globalPosition);
       },
       onHorizontalDragEnd: (DragEndDetails details) {
-        if (_controllerWasPlaying &&
-            controller.value.position != controller.value.duration) {
+        if (_controllerWasPlaying && controller.value.position != controller.value.duration) {
           controller.play();
         }
       },
