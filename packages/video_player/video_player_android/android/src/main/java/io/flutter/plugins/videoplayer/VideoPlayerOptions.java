@@ -4,6 +4,6 @@
 
 package io.flutter.plugins.videoplayer;
 
-public class VideoPlayerOptions {
+class VideoPlayerOptions {
   public boolean mixWithOthers;
 }

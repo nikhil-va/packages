@@ -43,64 +43,64 @@ void main() {
   });
 
   testWidgets('initializes at the start', (_) async {
-    final int playerId =
-        (await player.create(
-          DataSource(sourceType: DataSourceType.asset, asset: _videoAssetKey),
-        ))!;
+    final int textureId = (await player.create(DataSource(
+      sourceType: DataSourceType.asset,
+      asset: _videoAssetKey,
+    )))!;
 
     expect(
-      await _getDuration(player, playerId),
+      await _getDuration(player, textureId),
       const Duration(seconds: 7, milliseconds: 540),
     );
 
-    await player.dispose(playerId);
+    await player.dispose(textureId);
   });
 
   testWidgets('can be played', (WidgetTester tester) async {
-    final int playerId =
-        (await player.create(
-          DataSource(sourceType: DataSourceType.asset, asset: _videoAssetKey),
-        ))!;
+    final int textureId = (await player.create(DataSource(
+      sourceType: DataSourceType.asset,
+      asset: _videoAssetKey,
+    )))!;
 
-    await player.play(playerId);
+    await player.play(textureId);
     await tester.pumpAndSettle(_playDuration);
 
-    expect(await player.getPosition(playerId), greaterThan(Duration.zero));
-    await player.dispose(playerId);
+    expect(await player.getPosition(textureId), greaterThan(Duration.zero));
+    await player.dispose(textureId);
   });
 
   testWidgets('can seek', (WidgetTester tester) async {
-    final int playerId =
-        (await player.create(
-          DataSource(sourceType: DataSourceType.asset, asset: _videoAssetKey),
-        ))!;
+    final int textureId = (await player.create(DataSource(
+      sourceType: DataSourceType.asset,
+      asset: _videoAssetKey,
+    )))!;
 
-    await player.seekTo(playerId, const Duration(seconds: 3));
+    await player.seekTo(textureId, const Duration(seconds: 3));
     await tester.pumpAndSettle(_playDuration);
 
     expect(
-      await player.getPosition(playerId),
+      await player.getPosition(textureId),
       greaterThanOrEqualTo(const Duration(seconds: 3)),
     );
-    await player.dispose(playerId);
+    await player.dispose(textureId);
   });
 
   testWidgets('can pause', (WidgetTester tester) async {
-    final int playerId =
-        (await player.create(
-          DataSource(sourceType: DataSourceType.asset, asset: _videoAssetKey),
-        ))!;
+    final int textureId = (await player.create(DataSource(
+      sourceType: DataSourceType.asset,
+      asset: _videoAssetKey,
+    )))!;
 
-    await player.play(playerId);
+    await player.play(textureId);
     await tester.pumpAndSettle(_playDuration);
 
-    await player.pause(playerId);
+    await player.pause(textureId);
     await tester.pumpAndSettle(_playDuration);
-    final Duration pausedDuration = await player.getPosition(playerId);
+    final Duration pausedDuration = await player.getPosition(textureId);
     await tester.pumpAndSettle(_playDuration);
 
-    expect(await player.getPosition(playerId), pausedDuration);
-    await player.dispose(playerId);
+    expect(await player.getPosition(textureId), pausedDuration);
+    await player.dispose(textureId);
   });
 
   testWidgets('can play a video from a file', (WidgetTester tester) async {
@@ -112,64 +112,58 @@ void main() {
       ),
     );
 
-    final int playerId =
-        (await player.create(
-          DataSource(sourceType: DataSourceType.file, uri: file.path),
-        ))!;
+    final int textureId = (await player.create(DataSource(
+      sourceType: DataSourceType.file,
+      uri: file.path,
+    )))!;
 
-    await player.play(playerId);
+    await player.play(textureId);
     await tester.pumpAndSettle(_playDuration);
 
-    expect(await player.getPosition(playerId), greaterThan(Duration.zero));
+    expect(await player.getPosition(textureId), greaterThan(Duration.zero));
     await directory.delete(recursive: true);
-    await player.dispose(playerId);
+    await player.dispose(textureId);
   });
 
   testWidgets('can play a video from network', (WidgetTester tester) async {
-    final int playerId =
-        (await player.create(
-          DataSource(
-            sourceType: DataSourceType.network,
-            uri: getUrlForAssetAsNetworkSource(_videoAssetKey),
-          ),
-        ))!;
+    final int textureId = (await player.create(DataSource(
+      sourceType: DataSourceType.network,
+      uri: getUrlForAssetAsNetworkSource(_videoAssetKey),
+    )))!;
 
-    await player.play(playerId);
-    await player.seekTo(playerId, const Duration(seconds: 5));
+    await player.play(textureId);
+    await player.seekTo(textureId, const Duration(seconds: 5));
     await tester.pumpAndSettle(_playDuration);
-    await player.pause(playerId);
+    await player.pause(textureId);
 
-    expect(await player.getPosition(playerId), greaterThan(Duration.zero));
+    expect(await player.getPosition(textureId), greaterThan(Duration.zero));
 
-    final DurationRange range = await _getBufferingRange(player, playerId);
+    final DurationRange range = await _getBufferingRange(player, textureId);
     expect(range.start, Duration.zero);
     expect(range.end, greaterThan(Duration.zero));
 
-    await player.dispose(playerId);
+    await player.dispose(textureId);
   });
 }
 
-Future<Duration> _getDuration(AndroidVideoPlayer player, int playerId) {
-  return player
-      .videoEventsFor(playerId)
-      .firstWhere((VideoEvent event) {
-        return event.eventType == VideoEventType.initialized;
-      })
-      .then((VideoEvent event) {
-        return event.duration!;
-      });
+Future<Duration> _getDuration(
+  AndroidVideoPlayer player,
+  int textureId,
+) {
+  return player.videoEventsFor(textureId).firstWhere((VideoEvent event) {
+    return event.eventType == VideoEventType.initialized;
+  }).then((VideoEvent event) {
+    return event.duration!;
+  });
 }
 
 Future<DurationRange> _getBufferingRange(
   AndroidVideoPlayer player,
-  int playerId,
+  int textureId,
 ) {
-  return player
-      .videoEventsFor(playerId)
-      .firstWhere((VideoEvent event) {
-        return event.eventType == VideoEventType.bufferingUpdate;
-      })
-      .then((VideoEvent event) {
-        return event.buffered!.first;
-      });
+  return player.videoEventsFor(textureId).firstWhere((VideoEvent event) {
+    return event.eventType == VideoEventType.bufferingUpdate;
+  }).then((VideoEvent event) {
+    return event.buffered!.first;
+  });
 }

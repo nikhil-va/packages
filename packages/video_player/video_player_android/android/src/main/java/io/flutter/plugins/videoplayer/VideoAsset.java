@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /** A video to be played by {@link VideoPlayer}. */
-public abstract class VideoAsset {
+abstract class VideoAsset {
   /**
    * Returns an asset from a local {@code asset:///} URL, i.e. an on-device asset.
    *
@@ -70,7 +70,7 @@ public abstract class VideoAsset {
    * @return media item.
    */
   @NonNull
-  public abstract MediaItem getMediaItem();
+  abstract MediaItem getMediaItem();
 
   /**
    * Returns the configured media source factory, if needed for this asset type.
@@ -78,8 +78,7 @@ public abstract class VideoAsset {
    * @param context application context.
    * @return configured factory, or {@code null} if not needed for this asset type.
    */
-  @NonNull
-  public abstract MediaSource.Factory getMediaSourceFactory(@NonNull Context context);
+  abstract MediaSource.Factory getMediaSourceFactory(Context context);
 
   /** Streaming formats that can be provided to the video player as a hint. */
   enum StreamingFormat {
